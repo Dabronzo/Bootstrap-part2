@@ -75,6 +75,12 @@ function fetchGitHubInformation(event){
             //checking if is a 404 error
             if (errorResponse.status === 404){
                 $("#gh-user-data").html(`<h2>No info found for user: ${username}</h2>`);
+            } else if (errorResponse.status === 403){
+                //because we fire an api every letter typed, gitHub has a cooldown time to avoid flooding their
+                //server. We can't do too much about that but we will display a friendly and understandble message
+                //to the user
+                var coolDowTime = new Date(errorResponse.getResponseHeader('X-RateLimit-Reset')*1000);
+                $("#gh-user-data").html(`<h4>Too many requests, please wait until ${coolDowTime.toLocaleTimeString()}</h4>`);
             } else {
                 console.log(errorResponse);
                 $("#gh-user-data").html(`<h2>Error: ${errorResponse.responseJSON.message}</h2>`);
